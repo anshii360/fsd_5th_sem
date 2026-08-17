@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demo fetch</title>
+    <title>Demo Fetch</title>
 
     <style>
         table {
             width: 80vw;
             border-collapse: collapse;
-            margin:auto;
+            margin: auto;
             text-align: center;
         }
 
@@ -19,73 +19,166 @@
             border: 2px solid red;
             padding: 8px;
         }
-        img{
-            width:80px;
-            height:80px;
+
+        th {
+            background-color: lightgray;
+        }
+
+        img {
+            width: 80px;
+            height: 80px;
             object-fit: contain;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        button {
+            color: white;
+            background-color: blue;
         }
     </style>
 
     <script>
-        const URL = "https://dummyjson.com/products?limit=10&skip=3";
+
+        const PRODUCT_URL =
+            "https://dummyjson.com/products?limit=10&skip=3";
+
+        const RATE_URL =
+            "https://open.er-api.com/v6/latest/USD";
+
 
         async function loadProduct() {
+
             try {
-                const res = await fetch(URL);
-                console.log("res =", res);
+
+                const res = await fetch(PRODUCT_URL);
+
+                console.log("Product response =", res);
+
 
                 const data = await res.json();
-                console.log("data =", data.products);
+
+                console.log("Products =", data.products);
+
+
+                const rateRes = await fetch(RATE_URL);
+
+                console.log("Rate response =", rateRes);
+
+
+                const rateddata = await rateRes.json();
+
+
+                const rate = rateddata.rates.INR;
+
+                console.log("USD to INR rate =", rate);
+
 
                 let rows = "";
 
+
                 data.products.map((i, index) => {
+
+                    const priceInINR = i.price * rate;
+
+
                     rows += `
                         <tr>
+
                             <td>${index + 1}</td>
+
                             <td>${i.title}</td>
-                            <td><img src="${i.thumbnail}" alt="${i.title}" width="100"></td>
+
+                            <td>
+                                <img
+                                    src="${i.thumbnail}"
+                                    alt="${i.title}"
+                                >
+                            </td>
+
                             <td>${i.category}</td>
+
                             <td>${i.rating}</td>
-                            <td>${i.price}</td>
+
+                            <td>
+                                ₹${priceInINR.toFixed(2)}
+                            </td>
+
                             <td>${i.stock}</td>
+                            <td>
+                                <button>
+                                    Add to Cart
+                                    </button>
+                                </td>
+
+
                         </tr>
                     `;
+
                 });
 
+
                 const el = document.getElementById("data");
+
                 el.innerHTML = rows;
 
+
             } catch (err) {
+
                 console.log("ERROR =", err);
+
             }
+
         }
 
+
         loadProduct();
+
     </script>
+
 </head>
+
 
 <body>
 
-    <h1>
-        <center>List of Products</center>
-    </h1>
+    <h1>List of Products</h1>
+
 
     <table>
+
         <thead>
+
             <tr>
+
                 <th>Sr.No</th>
+
                 <th>Title</th>
-                <th>image</th>
+
+                <th>Image</th>
+
                 <th>Category</th>
+
                 <th>Rating</th>
-                <th>Price</th>
+
+                <th>Price (INR)</th>
+
                 <th>Stocks</th>
+
+                <th>
+                    Add to Cart
+                </th>
+
             </tr>
+
         </thead>
 
+
         <tbody id="data">
+
         </tbody>
+
     </table>
 
 </body>
